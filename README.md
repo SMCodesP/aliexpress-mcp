@@ -92,20 +92,21 @@ vars (defaults in **bold**):
 
 | Env var | Default | Meaning |
 |---|---|---|
-| `AE_REGION` | **`DE`** | Ship-to region |
-| `AE_CURRENCY` | **`EUR`** | Display currency |
-| `AE_LOCALE` | **`de_DE`** | Language / localisation |
-| `AE_MAX_CONCURRENT` | **`2`** | Process-wide cap on concurrent requests to AliExpress (0.1.1+). Chat agents fire several tool calls in parallel; the excess queue instead of hitting AliExpress at once, which is what trips its anti-bot (x5sec / TMD). |
-| `AE_MTOP_COOLDOWN` | **`900`** | Seconds to stop attempting MTop product detail after it answers with an anti-bot challenge (0.2.0+). Without it every detail call burns four blocked round-trips before falling back. Set `0` to retry MTop on every call. |
-| `AE_BROWSER_ENABLED` | **`true`** | Browser transport for product detail (0.3.0+). Set `false` to run browser-less; detail then degrades to the partial `ssr+search` record. |
-| `AE_BROWSER_ATTEMPTS` | **`3`** | Attempts per lookup, each in a fresh context. AliExpress challenges a proportion of loads; a retry usually clears it. |
-| `AE_BROWSER_RETRY_DELAY_S` | **`1.5`** | Pause between attempts. Retrying instantly is what the anti-bot watches for. |
-| `AE_BROWSER_TIMEOUT_MS` | **`45000`** | Per-attempt budget. Rarely reached: a challenged attempt aborts as soon as RGV587 arrives. |
-| `AE_BROWSER_HEADLESS` | **`true`** | Headless suffices for AliExpress (verified). Unlike the sibling baumarkt-mcp, no Xvfb/headed display is needed. |
+| `AE_REGION` | **`DE`** | Ship-to region (e.g. `BR` for Brazil) |
+| `AE_CURRENCY` | **`EUR`** | Display currency (e.g. `BRL` for Brazilian Real) |
+| `AE_LOCALE` | **`de_DE`** | Language / localisation (e.g. `pt_BR` for Portuguese) |
+| `ALIEXPRESS_COOKIE` | *none* | Full cookie string or session cookies (`aep_usuc_f`, `xman_t`, etc.) to bypass anti-bot / TMD punish page |
+| `AE_COOKIE_FILE` | `~/.gemini/config/aliexpress_cookie.txt` | Path to a text file containing the AliExpress cookie string |
+| `AE_MAX_CONCURRENT` | **`2`** | Process-wide cap on concurrent requests to AliExpress. |
+| `AE_MTOP_COOLDOWN` | **`900`** | Seconds to stop attempting MTop product detail after it answers with an anti-bot challenge. |
+| `AE_BROWSER_ENABLED` | **`true`** | Browser transport for product detail. |
+| `AE_BROWSER_ATTEMPTS` | **`3`** | Attempts per lookup, each in a fresh context. |
+| `AE_BROWSER_RETRY_DELAY_S` | **`1.5`** | Pause between attempts. |
+| `AE_BROWSER_TIMEOUT_MS` | **`45000`** | Per-attempt budget. |
+| `AE_BROWSER_HEADLESS` | **`true`** | Headless mode for Chromium. |
 
 These are pushed to AliExpress via the `aep_usuc_f` cookie (search) and the
-`_lang` / `_currency` / `country` MTop params (product detail). Any market the
-site supports works; it falls back to site defaults for anything it doesn't.
+`_lang` / `_currency` / `country` MTop params (product detail). Any custom cookies provided via `ALIEXPRESS_COOKIE` or `AE_COOKIE_FILE` are also injected into both HTTP session and browser contexts to prevent anti-bot verification challenges.
 
 ## Run
 
